@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 public class Validator {
 
     public static Set<String> validate(String input) {
-        checkStringForNull(input);
+        checkStringForNullOrEmpty(input);
         Set<String> stringSetForCorrectBrackets = generateSetWithCorrectBrackets(input);
         String stringWithOtherSymbols = generateStringWithOtherSymbols(input);
         return getResultSet(stringSetForCorrectBrackets, stringWithOtherSymbols);
     }
 
-    private static void checkStringForNull(String input){
+    private static void checkStringForNullOrEmpty(String input){
         if(input == null){
             throw new NullPointerException("input can't be null");
         }
