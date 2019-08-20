@@ -19,6 +19,16 @@ class ValidatorTest {
     }
 
     @Test
+    void validate_extraBracketsTouchTest_true() {
+
+        Set<String> actualSet = Validator.validate("{}}{{}}{");
+
+        Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList("{{}{}}", "{{}}{}", "{}{}{}", "{}{{}}", "{{{}}}"));
+
+        Assertions.assertEquals(expectedSet, actualSet);
+    }
+
+    @Test
     void validate_extraBracketsWithXLetters_true() {
 
         Set<String> actualSet = Validator.validate("{}x}x}");

@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Stack;
@@ -89,16 +90,19 @@ public class Validator {
         String stringWithCorrectBrackets = generateStringWithCorrectBrackets(input);
         stringSetForCorrectBrackets.add(stringWithCorrectBrackets);
         char[] resultChar = stringWithCorrectBrackets.toCharArray();
-        for (int i = 0; i < resultChar.length; i += 2) {
-            if (i + 2 < resultChar.length) {
-                swap(resultChar, i + 1, i + 2);
+        for (int i = 0; i < resultChar.length; i++) {
+            for(int j = 0; j < resultChar.length; j = j + 2) {
+                if (j + 2 < resultChar.length) {
+                    swap(resultChar, j + 1, j + 2);
+                    stringSetForCorrectBrackets.add(String.copyValueOf(resultChar));
+                }
+                if(j - 1 == resultChar.length / 2 && i == 0){
+                    char[] temp = Arrays.copyOf(resultChar, resultChar.length);
+                    swap(resultChar, j - 2, j - 1);
+                    stringSetForCorrectBrackets.add(String.copyValueOf(resultChar));
+                    resultChar = temp;
+                }
             }
-
-            if(resultChar.length > 4 && i + 4 < resultChar.length) {
-                swap(resultChar, i + 1, i + 4);
-            }
-
-            stringSetForCorrectBrackets.add(String.copyValueOf(resultChar));
         }
 
         return stringSetForCorrectBrackets;
