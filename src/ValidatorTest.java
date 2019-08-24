@@ -15,7 +15,7 @@ class ValidatorTest {
 
         Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList("{}{}", "{{}}"));
 
-        Assertions.assertEquals(actualSet, expectedSet);
+        Assertions.assertEquals(expectedSet, actualSet);
     }
 
     @Test
@@ -23,7 +23,7 @@ class ValidatorTest {
 
         Set<String> actualSet = Validator.validate("{}}{{}}{");
 
-        Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList("{{}{}}", "{{}}{}", "{}{}{}", "{}{{}}", "{{{}}}"));
+        Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList("{}{{}}"));
 
         Assertions.assertEquals(expectedSet, actualSet);
     }
@@ -35,7 +35,7 @@ class ValidatorTest {
 
         Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList("{x}x", "{xx}", "{}xx"));
 
-        Assertions.assertEquals(actualSet, expectedSet);
+        Assertions.assertEquals(expectedSet, actualSet);
     }
 
     @Test
@@ -45,7 +45,7 @@ class ValidatorTest {
 
         Set<String> expectedSet = new LinkedHashSet<>(Arrays.asList(""));
 
-        Assertions.assertEquals(actualSet, expectedSet);
+        Assertions.assertEquals(expectedSet, actualSet);
     }
 
     @Test
@@ -68,7 +68,7 @@ class ValidatorTest {
                 "{{}abc}"
         ));
 
-        Assertions.assertEquals(actualSet, expectedSet);
+        Assertions.assertEquals(expectedSet, actualSet);
     }
 
     @Test

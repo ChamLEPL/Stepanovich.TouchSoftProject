@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,44 +65,114 @@ public class Validator {
         return stringForAllBrackets;
     }
 
-    private static String generateStringWithCorrectBrackets(String input){
-
-        Stack<Character> stackForBrackets = new Stack<>();
-        String stringWithCorrectBrackets = "";
-        for (char item : generateStringWithAllBrackets(input).toCharArray()) {
-            if (item == '{') {
-                stackForBrackets.push(item);
-            } else if (stackForBrackets.size() != 0) {
-                if (item == '}' && stackForBrackets.peek() == '{') {
-                    stringWithCorrectBrackets += stackForBrackets.pop().toString() + item;
-                }
-            }
-        }
-
-        return stringWithCorrectBrackets;
-    }
-
     private static Set<String> generateSetWithCorrectBrackets(String input){
+        int leftCountBracketFirstItar = 0;
+        int leftCountBracketSecondItar = 0;
+        int rightCountBracketFirstItar = 0;
+        int rightCountBracketSecondItar = 0;
+        String stringWithCorrectBracketsFromLeftToRight = "";
         Set<String> stringSetForCorrectBrackets = new LinkedHashSet<>();
-        String stringWithCorrectBrackets = generateStringWithCorrectBrackets(input);
-        stringSetForCorrectBrackets.add(stringWithCorrectBrackets);
-        char[] resultChar = stringWithCorrectBrackets.toCharArray();
-        for (int i = 0; i < resultChar.length; i++) {
-            for(int j = 0; j < resultChar.length; j = j + 2) {
-                if (j + 2 < resultChar.length) {
-                    swap(resultChar, j + 1, j + 2);
-                    stringSetForCorrectBrackets.add(String.copyValueOf(resultChar));
+        Stack<Character> stackForBrackets = new Stack<>();
+        char [] arrayWithAllBrackets = generateStringWithAllBrackets(input).toCharArray();
+        List<Integer> listWithCountOfBrackets = countBrackets(arrayWithAllBrackets);
+        char [] arrayWithCorrectBrackets = listWithCountOfBrackets.get(0) < listWithCountOfBrackets.get(1) ?
+                new char [listWithCountOfBrackets.get(0) * 2] :
+                new char [listWithCountOfBrackets.get(1) * 2];
+        if(listWithCountOfBrackets.get(0) < listWithCountOfBrackets.get(1)){
+            for (int i = 0; i < arrayWithAllBrackets.length; i++) {
+                if(i == arrayWithAllBrackets.length - 1 && arrayWithAllBrackets[i] == '{'){
+                    break;
                 }
-                if(j - 1 == resultChar.length / 2 && i == 0){
-                    char[] temp = Arrays.copyOf(resultChar, resultChar.length);
-                    swap(resultChar, j - 2, j - 1);
-                    stringSetForCorrectBrackets.add(String.copyValueOf(resultChar));
-                    resultChar = temp;
+
+                if (arrayWithAllBrackets[i] == '{') {
+                    stackForBrackets.push(arrayWithAllBrackets[i]);
+                    stringWithCorrectBracketsFromLeftToRight += arrayWithAllBrackets[i];
+                } else if (stackForBrackets.size() != 0) {
+                    if (arrayWithAllBrackets[i] == '}' && stackForBrackets.pop() == '{') {
+                        stringWithCorrectBracketsFromLeftToRight += arrayWithAllBrackets[i];
+                        rightCountBracketFirstItar++;
+                    }
+                }
+            }
+
+            for (int i = arrayWithAllBrackets.length - 1, j = 0; i >= 0; i--) {
+                if(i == 0 && arrayWithAllBrackets[i] == '}'){
+                    break;
+                }
+
+                if (arrayWithAllBrackets[i] == '}' && rightCountBracketFirstItar > rightCountBracketSecondItar) {
+                    stackForBrackets.push(arrayWithAllBrackets[i]);
+                    arrayWithCorrectBrackets[arrayWithCorrectBrackets.length - 1 - j++] = arrayWithAllBrackets[i];
+                    rightCountBracketSecondItar++;
+                } else if (stackForBrackets.size() != 0) {
+                    if (arrayWithAllBrackets[i] == '{' && stackForBrackets.pop() == '}') {
+                        arrayWithCorrectBrackets[arrayWithCorrectBrackets.length - 1 - j++] = arrayWithAllBrackets[i];
+                    }
+                }
+            }
+        } else {
+            for (int i = arrayWithAllBrackets.length - 1, j = 0; i >= 0; i--) {
+                if(i == 0 && arrayWithAllBrackets[i] == '}'){
+                    break;
+                }
+
+                if (arrayWithAllBrackets[i] == '}') {
+                    stackForBrackets.push(arrayWithAllBrackets[i]);
+                    arrayWithCorrectBrackets[arrayWithCorrectBrackets.length - 1 - j++] = arrayWithAllBrackets[i];
+                } else if (stackForBrackets.size() != 0) {
+                    if (arrayWithAllBrackets[i] == '{' && stackForBrackets.pop() == '}') {
+                        arrayWithCorrectBrackets[arrayWithCorrectBrackets.length - 1 - j++] = arrayWithAllBrackets[i];
+                        leftCountBracketFirstItar++;
+                    }
+                }
+            }
+
+            for (int i = 0; i < arrayWithAllBrackets.length; i++) {
+                if(i == arrayWithAllBrackets.length - 1 && arrayWithAllBrackets[i] == '{'){
+                    break;
+                }
+
+                if (arrayWithAllBrackets[i] == '{' && leftCountBracketSecondItar < leftCountBracketFirstItar) {
+                    stackForBrackets.push(arrayWithAllBrackets[i]);
+                    stringWithCorrectBracketsFromLeftToRight += arrayWithAllBrackets[i];
+                    leftCountBracketSecondItar++;
+                } else if (stackForBrackets.size() != 0) {
+                    if (arrayWithAllBrackets[i] == '}' && stackForBrackets.pop() == '{') {
+                        stringWithCorrectBracketsFromLeftToRight += arrayWithAllBrackets[i];
+                    }
                 }
             }
         }
+
+        stringSetForCorrectBrackets.add(new String(arrayWithCorrectBrackets));
+        stringSetForCorrectBrackets.add(stringWithCorrectBracketsFromLeftToRight);
 
         return stringSetForCorrectBrackets;
+    }
+
+    private static List<Integer> countBrackets(char[] arrayWithAllBrackets){
+        List<Integer> list = new ArrayList<>();
+        int leftBrackets = 0;
+        int rightBrackets = 0;
+        for (int i = 0; i < arrayWithAllBrackets.length; i++) {
+            if (i == 0 && arrayWithAllBrackets[i] == '}'){
+                continue;
+            }
+
+            if(i == arrayWithAllBrackets.length - 1 && arrayWithAllBrackets[i] == '{'){
+                continue;
+            }
+
+            if (arrayWithAllBrackets[i] == '{') {
+                leftBrackets ++;
+            } else {
+                rightBrackets ++;
+            }
+        }
+
+        list.add(leftBrackets);
+        list.add(rightBrackets);
+        return  list;
     }
 
     private static int helperWithTranspositionForIncreasing(StringBuilder stringBuilder, String stringWithOtherSymbols,
